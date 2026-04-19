@@ -17,7 +17,7 @@ jobs:
     name: ${{ matrix.os }} / ${{ matrix.sanitizer }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install dependencies (Ubuntu)
         if: runner.os == 'Linux'
