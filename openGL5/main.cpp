@@ -19,6 +19,7 @@
 #include "selection.h"
 #include "save.h"
 #include "png_export.h"
+#include "script.h"
 
 // ── Init ────────────────────────────────────────────────────────
 
@@ -366,6 +367,13 @@ void specialFunc(int key, int /*x*/, int /*y*/) {
 
 int main(int argc, char** argv) {
     auto& app = DrawingApp::instance();
+
+    // ── Headless script mode: --script file.dtxt ────────────────
+    for (int i = 1; i < argc; ++i) {
+        if (std::string(argv[i]) == "--script" && i + 1 < argc) {
+            return run_script(argv[i + 1]);
+        }
+    }
 
     std::printf("DrawTool v2.0\n");
     std::printf("Enter line width (1-10): ");

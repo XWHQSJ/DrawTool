@@ -225,3 +225,4 @@ drawtool
 # DrawTool outputs
 drawing-*.png
 drawing.svg
+demos/*_output.svg

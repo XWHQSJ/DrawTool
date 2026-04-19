@@ -1,0 +1,18 @@
+# demos/undo_demo.dtxt
+#
+# Demonstrates undo: draws 3 lines, undoes the last, saves.
+# The output SVG should contain exactly 2 lines.
+
+width 800
+height 600
+
+color 1.0 1.0 1.0
+line 10 20 100 200
+line 50 50 150 150
+line 80 80 200 200
+
+# Undo the third line
+undo
+
+save demos/undo_demo_output.svg
+quit

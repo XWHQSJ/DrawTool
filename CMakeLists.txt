@@ -48,6 +48,11 @@ if(BUILD_TESTS)
     target_include_directories(geometry_test PRIVATE ${CMAKE_SOURCE_DIR}/openGL5)
     target_link_libraries(geometry_test GTest::gtest_main)
 
+    add_executable(script_test tests/script_test.cpp)
+    target_include_directories(script_test PRIVATE ${CMAKE_SOURCE_DIR}/openGL5)
+    target_link_libraries(script_test GTest::gtest_main)
+
     include(GoogleTest)
     gtest_discover_tests(geometry_test)
+    gtest_discover_tests(script_test)
 endif()

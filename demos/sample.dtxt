@@ -1,0 +1,41 @@
+# demos/sample.dtxt
+#
+# Example DrawTool script. Run with:
+#   ./drawtool --script demos/sample.dtxt
+#
+# Draws a simple scene and exports SVG.
+
+width 800
+height 600
+
+# Red lines
+color 1.0 0.0 0.0
+linewidth 2
+line 50 50 250 50
+line 50 100 250 100
+
+# Green filled rectangle
+color 0.0 0.8 0.0
+rect 300 50 500 200 fill
+
+# Blue circle outline
+color 0.0 0.4 1.0
+linewidth 3
+circle 650 125 60
+
+# Yellow triangle
+color 1.0 0.9 0.0
+triangle 100 300 200 300 150 400 fill
+
+# White arrow
+color 1.0 1.0 1.0
+linewidth 1
+arrow 300 350 500 350
+
+# Purple text
+color 0.8 0.2 1.0
+text 550 350 "DrawTool"
+
+# Save output
+save demos/sample_output.svg
+quit
