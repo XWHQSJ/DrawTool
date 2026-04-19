@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="680"
+     viewBox="0 0 960 680" font-family="'Segoe UI', system-ui, sans-serif">
+
+  <!-- Background -->
+  <rect width="960" height="680" rx="12" fill="#1a1a2e"/>
+
+  <!-- Title bar -->
+  <rect x="60" y="30" width="840" height="40" rx="8" fill="#16213e"/>
+  <text x="480" y="56" text-anchor="middle" fill="#e0e0e0" font-size="15" font-weight="bold">
+    DrawTool v2.0 - by XWHQSJ
+  </text>
+  <circle cx="82" cy="50" r="6" fill="#ff5f57"/>
+  <circle cx="100" cy="50" r="6" fill="#febc2e"/>
+  <circle cx="118" cy="50" r="6" fill="#28c840"/>
+
+  <!-- HUD bar -->
+  <rect x="60" y="80" width="840" height="24" fill="rgba(0,0,0,0.6)" rx="0"/>
+  <rect x="68" y="84" width="14" height="14" fill="#3366ff" rx="2"/>
+  <text x="90" y="96" fill="white" font-size="11">
+    Tool: Line | Shapes: 7 | Layer: 0
+  </text>
+
+  <!-- Canvas area -->
+  <rect x="60" y="104" width="840" height="480" fill="#0f0f23" stroke="#2a2a4a" stroke-width="1"/>
+
+  <!-- === Demo shapes on canvas === -->
+
+  <!-- Line tool demo -->
+  <line x1="100" y1="180" x2="260" y2="280" stroke="#ff4444" stroke-width="2"/>
+  <text x="100" y="170" fill="#ff8888" font-size="10" font-style="italic">Line [1]</text>
+
+  <!-- Circle outline demo -->
+  <circle cx="370" cy="220" r="50" fill="none" stroke="#44aaff" stroke-width="2"/>
+  <text x="340" y="155" fill="#88ccff" font-size="10" font-style="italic">Circle [2]</text>
+
+  <!-- Filled rectangle demo -->
+  <rect x="480" y="170" width="120" height="80" fill="#44cc44" rx="0"/>
+  <text x="490" y="162" fill="#88ee88" font-size="10" font-style="italic">Rect fill [5]</text>
+
+  <!-- Triangle demo -->
+  <polygon points="700,260 760,160 820,260" fill="none" stroke="#ffcc00" stroke-width="2"/>
+  <text x="720" y="150" fill="#ffdd66" font-size="10" font-style="italic">Triangle [6]</text>
+
+  <!-- Arrow demo -->
+  <line x1="120" y1="360" x2="280" y2="360" stroke="#cc44ff" stroke-width="2"/>
+  <polygon points="280,360 268,354 268,366" fill="#cc44ff"/>
+  <text x="120" y="345" fill="#dd88ff" font-size="10" font-style="italic">Arrow [9]</text>
+
+  <!-- Bezier demo -->
+  <path d="M 340,400 C 380,320 460,320 500,400" fill="none" stroke="#ff8844" stroke-width="2"/>
+  <circle cx="340" cy="400" r="3" fill="#ff8844"/>
+  <circle cx="380" cy="320" r="3" fill="#ff8844"/>
+  <circle cx="460" cy="320" r="3" fill="#ff8844"/>
+  <circle cx="500" cy="400" r="3" fill="#ff8844"/>
+  <text x="370" y="310" fill="#ffaa66" font-size="10" font-style="italic">Bezier</text>
+
+  <!-- Freehand demo -->
+  <polyline points="560,380 570,365 590,370 610,350 630,360 660,340 680,355"
+            fill="none" stroke="#00dddd" stroke-width="2" stroke-linecap="round"/>
+  <text x="560" y="330" fill="#66eeee" font-size="10" font-style="italic">Freehand [8]</text>
+
+  <!-- Text tool demo -->
+  <text x="720" y="380" fill="#ffffff" font-size="16">Hello!</text>
+  <text x="720" y="400" fill="#aaaaaa" font-size="10" font-style="italic">Text tool</text>
+
+  <!-- Selection highlight demo -->
+  <rect x="150" y="430" width="100" height="60" fill="#224488" stroke="#ffffff"
+        stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="155" y="510" fill="#aaccff" font-size="10" font-style="italic">
+    Selected [0] -- white dashes
+  </text>
+
+  <!-- === Side panel: feature labels === -->
+
+  <!-- Right-side feature callouts -->
+  <rect x="60" y="590" width="840" height="80" rx="8" fill="#16213e"/>
+
+  <!-- Feature boxes -->
+  <rect x="80" y="600" width="130" height="22" rx="4" fill="#2a4a6e"/>
+  <text x="145" y="616" text-anchor="middle" fill="#e0e0e0" font-size="10">Ctrl+Z / Ctrl+Y</text>
+  <text x="145" y="636" text-anchor="middle" fill="#8899aa" font-size="9">Undo / Redo</text>
+
+  <rect x="230" y="600" width="100" height="22" rx="4" fill="#2a4a6e"/>
+  <text x="280" y="616" text-anchor="middle" fill="#e0e0e0" font-size="10">Ctrl+S</text>
+  <text x="280" y="636" text-anchor="middle" fill="#8899aa" font-size="9">Save PNG</text>
+
+  <rect x="350" y="600" width="100" height="22" rx="4" fill="#2a4a6e"/>
+  <text x="400" y="616" text-anchor="middle" fill="#e0e0e0" font-size="10">Ctrl+E</text>
+  <text x="400" y="636" text-anchor="middle" fill="#8899aa" font-size="9">Save SVG</text>
+
+  <rect x="470" y="600" width="100" height="22" rx="4" fill="#2a4a6e"/>
+  <text x="520" y="616" text-anchor="middle" fill="#e0e0e0" font-size="10">Ctrl+O</text>
+  <text x="520" y="636" text-anchor="middle" fill="#8899aa" font-size="9">Load SVG</text>
+
+  <rect x="590" y="600" width="120" height="22" rx="4" fill="#2a4a6e"/>
+  <text x="650" y="616" text-anchor="middle" fill="#e0e0e0" font-size="10">Right-click</text>
+  <text x="650" y="636" text-anchor="middle" fill="#8899aa" font-size="9">Context menu</text>
+
+  <rect x="730" y="600" width="150" height="22" rx="4" fill="#2a4a6e"/>
+  <text x="805" y="616" text-anchor="middle" fill="#e0e0e0" font-size="10">--script file.dtxt</text>
+  <text x="805" y="636" text-anchor="middle" fill="#8899aa" font-size="9">Headless / scripted</text>
+
+  <!-- Layer indicator -->
+  <text x="480" y="660" text-anchor="middle" fill="#556677" font-size="10">
+    4 Layers (0-3) | 8 Shape tools | Stipple patterns | Line widths 1-8 px
+  </text>
+
+</svg>

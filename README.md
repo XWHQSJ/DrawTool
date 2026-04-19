@@ -2,9 +2,12 @@
 
 A feature-rich interactive drawing tool built with OpenGL and GLUT.
 
-![C++](https://img.shields.io/badge/C%2B%2B17-00599C?logo=cplusplus&logoColor=white)
+[![CI](https://github.com/XWHQSJ/DrawTool/actions/workflows/ci.yml/badge.svg)](https://github.com/XWHQSJ/DrawTool/actions/workflows/ci.yml)
+[![Release](https://github.com/XWHQSJ/DrawTool/actions/workflows/release.yml/badge.svg)](https://github.com/XWHQSJ/DrawTool/releases)
+[![CodeQL](https://github.com/XWHQSJ/DrawTool/actions/workflows/codeql.yml/badge.svg)](https://github.com/XWHQSJ/DrawTool/actions/workflows/codeql.yml)
+![C++17](https://img.shields.io/badge/C%2B%2B17-00599C?logo=cplusplus&logoColor=white)
 ![OpenGL](https://img.shields.io/badge/OpenGL-5586A4?logo=opengl&logoColor=white)
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## About
 
@@ -51,6 +54,40 @@ DrawTool is an OpenGL-based drawing application that lets you create, edit, and 
 
 A translucent top bar shows the current tool, shape count, active layer, and a color swatch.
 
+### Scripted / Headless Mode
+
+Run DrawTool without a GUI via `--script`:
+
+```bash
+./build/drawtool --script demos/sample.dtxt
+```
+
+Script DSL commands:
+
+| Command | Example |
+|---------|---------|
+| `line` | `line 10 20 100 200` |
+| `circle` | `circle 150 150 50 fill` |
+| `rect` | `rect 200 200 300 300 fill` |
+| `triangle` | `triangle 0 0 100 0 50 80` |
+| `arrow` | `arrow 0 0 200 200` |
+| `text` | `text 50 100 "Hello"` |
+| `color` | `color 1.0 0.0 0.0` |
+| `linewidth` | `linewidth 3` |
+| `layer` | `layer 2` |
+| `undo` / `redo` | `undo` |
+| `clear` | `clear` |
+| `save` | `save output.svg` |
+| `width` / `height` | `width 1024` |
+| `quit` | `quit` |
+
+Lines starting with `#` are comments. See `demos/` for examples.
+
+## Feature Tour
+
+See [`docs/feature-tour.svg`](docs/feature-tour.svg) for a visual walkthrough
+of the application's UI, tools, and keyboard shortcuts.
+
 ## Keyboard Shortcuts
 
 | Key | Action |
@@ -91,7 +128,12 @@ A translucent top bar shows the current tool, shape count, active layer, and a c
 | `openGL5/save.h` | SVG save and load |
 | `openGL5/png_export.h` | PNG export via stb_image_write |
 | `openGL5/stb_image_write.h` | Single-header PNG writer (vendored) |
+| `openGL5/script.h` | Headless script interpreter (`--script` mode) |
 | `tests/geometry_test.cpp` | GoogleTest unit tests (30 tests) |
+| `tests/script_test.cpp` | Script interpreter tests (23 tests) |
+| `demos/sample.dtxt` | Example script: draws shapes and exports SVG |
+| `demos/undo_demo.dtxt` | Example script: 3 lines + undo = 2 in output |
+| `docs/feature-tour.svg` | Visual walkthrough of the UI and tools |
 
 ## Build
 
@@ -138,3 +180,7 @@ ImGui integration was evaluated for Tier 3. Given the legacy OpenGL + GLUT archi
 ## License
 
 [MIT](LICENSE)
+
+## Security
+
+See [SECURITY.md](SECURITY.md) for vulnerability reporting guidelines.
