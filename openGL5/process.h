@@ -1,106 +1,214 @@
 #pragma once
+
+#ifdef __APPLE__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#include <GLUT/glut.h>
+#pragma GCC diagnostic pop
+#else
 #include <GL/glut.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include "mouse.h"
+#endif
 
-#define SIZE 512                                       //µã»÷Êý
+#include "shape.h"
+#include "app.h"
+#include <algorithm>
+#include <cmath>
 
-GLint HITS;
+static const float PI_CONST = 3.14159265358979323846f;
+static const int CIRCLE_SEGMENTS = 360;
 
-//»æÖÆº¯Êý
-void drawObjects(GLenum mode)
-{
+// â”€â”€ Render a single shape â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+static inline void renderShape(const Shape& s, bool highlight) {
+    glColor3f(s.r, s.g, s.b);
+
+    if (highlight) {
+        // Draw a white dashed outline around selected shape
+        glColor3f(1.0f, 1.0f, 1.0f);
+        glLineStipple(1, 0xAAAA);
+        glEnable(GL_LINE_STIPPLE);
+    }
+
+    if (s.stipple != 0 && !highlight) {
+        glLineStipple(1, (GLushort)s.stipple);
+        glEnable(GL_LINE_STIPPLE);
+    }
+
+    glLineWidth((GLfloat)s.lineWidth);
+
+    switch (s.type) {
+    case ShapeType::Line: {
+        glBegin(GL_LINES);
+        glVertex2i(s.x1, s.y1);
+        glVertex2i(s.x2, s.y2);
+        glEnd();
+        break;
+    }
+
+    case ShapeType::LineCircle:
+    case ShapeType::FillCircle: {
+        float radius = std::sqrt(
+            (float)(s.x1 - s.x2) * (s.x1 - s.x2) +
+            (float)(s.y1 - s.y2) * (s.y1 - s.y2)) / 2.0f;
+        float cx = (s.x1 + s.x2) / 2.0f;
+        float cy = (s.y1 + s.y2) / 2.0f;
+
+        GLenum mode = (s.type == ShapeType::FillCircle) ? GL_POLYGON : GL_LINE_LOOP;
+        glBegin(mode);
+        for (int i = 0; i < CIRCLE_SEGMENTS; ++i) {
+            float angle = 2.0f * PI_CONST * i / CIRCLE_SEGMENTS;
+            glVertex2f(cx + radius * std::sin(angle),
+                       cy + radius * std::cos(angle));
+        }
+        glEnd();
+        break;
+    }
+
+    case ShapeType::LineRect: {
+        glBegin(GL_LINE_LOOP);
+        glVertex2i(s.x1, s.y1);
+        glVertex2i(s.x1, s.y2);
+        glVertex2i(s.x2, s.y2);
+        glVertex2i(s.x2, s.y1);
+        glEnd();
+        break;
+    }
+
+    case ShapeType::FillRect: {
+        glBegin(GL_POLYGON);
+        glVertex2i(s.x1, s.y1);
+        glVertex2i(s.x1, s.y2);
+        glVertex2i(s.x2, s.y2);
+        glVertex2i(s.x2, s.y1);
+        glEnd();
+        break;
+    }
+
+    case ShapeType::LineTri: {
+        glBegin(GL_LINE_LOOP);
+        glVertex2i(s.x1, s.y1);
+        glVertex2i(s.x2, s.y2);
+        glVertex2i(s.x3, s.y3);
+        glEnd();
+        break;
+    }
+
+    case ShapeType::FillTri: {
+        glBegin(GL_TRIANGLES);
+        glVertex2i(s.x1, s.y1);
+        glVertex2i(s.x2, s.y2);
+        glVertex2i(s.x3, s.y3);
+        glEnd();
+        break;
+    }
+
+    case ShapeType::Polyline: {
+        if (s.pts.size() < 2) break;
+        glBegin(GL_LINE_STRIP);
+        for (const auto& p : s.pts) {
+            glVertex2i(p.first, p.second);
+        }
+        glEnd();
+        break;
+    }
+
+    case ShapeType::Arrow: {
+        // Shaft
+        glBegin(GL_LINES);
+        glVertex2i(s.x1, s.y1);
+        glVertex2i(s.x2, s.y2);
+        glEnd();
+
+        // Arrowhead
+        float dx = (float)(s.x2 - s.x1);
+        float dy = (float)(s.y2 - s.y1);
+        float len = std::sqrt(dx * dx + dy * dy);
+        if (len < 1.0f) break;
+        float ux = dx / len;
+        float uy = dy / len;
+        float headLen = 12.0f;
+        float headW = 5.0f;
+        float bx = s.x2 - ux * headLen;
+        float by = s.y2 - uy * headLen;
+        glBegin(GL_TRIANGLES);
+        glVertex2i(s.x2, s.y2);
+        glVertex2f(bx + uy * headW, by - ux * headW);
+        glVertex2f(bx - uy * headW, by + ux * headW);
+        glEnd();
+        break;
+    }
+
+    case ShapeType::Bezier: {
+        if (s.pts.size() < 4) break;
+        glBegin(GL_LINE_STRIP);
+        for (int i = 0; i <= 50; ++i) {
+            float t = i / 50.0f;
+            float u = 1.0f - t;
+            float x = u*u*u*s.pts[0].first + 3*u*u*t*s.pts[1].first +
+                       3*u*t*t*s.pts[2].first + t*t*t*s.pts[3].first;
+            float y = u*u*u*s.pts[0].second + 3*u*u*t*s.pts[1].second +
+                       3*u*t*t*s.pts[2].second + t*t*t*s.pts[3].second;
+            glVertex2f(x, y);
+        }
+        glEnd();
+        // Draw control points as small squares
+        glPointSize(6.0f);
+        glBegin(GL_POINTS);
+        for (const auto& p : s.pts) {
+            glVertex2i(p.first, p.second);
+        }
+        glEnd();
+        break;
+    }
+
+    case ShapeType::Text: {
+        glRasterPos2i(s.x1, s.y1);
+        for (char c : s.text) {
+            glutBitmapCharacter(GLUT_BITMAP_9_BY_15, c);
+        }
+        break;
+    }
+    }
+
+    glDisable(GL_LINE_STIPPLE);
+    glLineWidth(1.0f);
 }
 
-//Ê°È¡Êä³öº¯Êý
-void processSelect(GLint hits, GLuint buffer[])
-{
-	unsigned int i, j;
-	GLuint names;                                     //Í¼ÐÎÃû³Æ
-	GLuint *ptr;                                      //¼ÆÊýÖ¸Õë
-	GLuint minZ;
-	GLuint *ptrNames;                                 //¼ÆÊýÃû
-	GLuint numberOfNames;                             //Ãû³ÆÊýÄ¿
+// â”€â”€ Draw all shapes (sorted by layer) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-	printf("hits = %d\n", hits);
-	ptr = (GLuint *)buffer;
-	minZ = 0xffffffff;
-	for (i = 0; i < hits; i++)
-	{
-		names = *ptr;
-		ptr++;
-		if (*ptr < minZ) {
-			numberOfNames = names;
-			minZ = *ptr;
-			ptrNames = ptr + 2;
-		}
+inline void drawObjects(GLenum mode) {
+    // Sort indices by layer
+    std::vector<int> indices(g_shapes.size());
+    for (int i = 0; i < (int)g_shapes.size(); ++i) indices[i] = i;
+    std::sort(indices.begin(), indices.end(), [](int a, int b) {
+        return g_shapes[a].layer < g_shapes[b].layer;
+    });
 
-		ptr += names + 2;
-	}
-
-	printf("The closest hit names are ");
-	ptr = ptrNames;
-
-	for (j = 0; j < numberOfNames; j++, ptr++)
-	{
-		printf("%d ", *ptr);
-	}
-
-	printf("\n");
+    for (int idx : indices) {
+        if (mode == GL_SELECT) {
+            glLoadName(idx);
+        }
+        bool highlight = (idx == g_selectedIndex);
+        renderShape(g_shapes[idx], highlight);
+    }
 }
 
-//Ê°È¡º¯Êý
-void SelectObject(int btn, int state, GLint x, GLint y)
-{
-	GLuint selectBuff[SIZE] = { 0 };                                                    //´´½¨Ò»¸ö±£´æÑ¡Ôñ½á¹ûµÄÊý×é  
-	GLint hits;                                                                         //´æ·Å±»Ñ¡ÖÐµÄÎïÌåµÄ¸öÊý
-	GLint viewport[4];                                                                  //´æ·Å¿ÉÊÓ»¯ÇøÓòµÄ²ÎÊý
+// â”€â”€ Legacy pick processing (kept for compat) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-	if (glutGetModifiers() == GLUT_ACTIVE_CTRL && btn == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
-	{
-		glGetIntegerv(GL_VIEWPORT, viewport);                                           //»ñµÃviewport  
-		glSelectBuffer(64, selectBuff);                                                 //¸æËßOpenGL³õÊ¼»¯  selectbuffer  
-		glRenderMode(GL_SELECT);                                                        //½øÈëÑ¡ÔñÄ£Ê½  
-
-		glInitNames();                                                                  //³õÊ¼»¯Ãû×ÖÕ»  
-		glPushName(0);                                                                  //ÔÚÃû×ÖÕ»ÖÐ·ÅÈëÒ»¸ö³õÊ¼»¯Ãû×Ö£¬ÕâÀïÎª¡®0¡¯  
-
-		glMatrixMode(GL_PROJECTION);                                                    //½øÈëÍ¶Ó°½×¶Î×¼±¸Ê°È¡  
-		glPushMatrix();                                                                 //±£´æÒÔÇ°µÄÍ¶Ó°¾ØÕó  
-		glLoadIdentity();                                                               //ÔØÈëµ¥Î»¾ØÕó  
-
-		float m[16];
-
-		glGetFloatv(GL_PROJECTION_MATRIX, m);
-		gluPickMatrix((GLdouble)x, (GLdouble)(viewport[3] - y), 5.0, 5.0, viewport);    //´´½¨ÓÃÓÚÑ¡ÔñµÄÍ¶Ó°¾ØÕóÕ»
-
-		glGetFloatv(GL_PROJECTION_MATRIX, m);
-		glOrtho(-10, 10, -10, 10, -10, 10);                                             //Ê°È¡¾ØÕó³ËÒÔÍ¶Ó°¾ØÕó£¬ÕâÑù¾Í¿ÉÒÔÈÃÑ¡Ôñ¿ò·Å´óÎªºÍÊÓÌåÒ»Ñù´ó  
-		glGetFloatv(GL_PROJECTION_MATRIX, m);
-
-		drawObjects(GL_SELECT);				                                            // ¸Ãº¯ÊýÖÐäÖÈ¾ÎïÌå£¬²¢ÇÒ¸øÎïÌåÉè¶¨Ãû×Ö  
-
-		glMatrixMode(GL_PROJECTION);
-		glPopMatrix();                                                                  // ·µ»ØÕý³£µÄÍ¶Ó°±ä»»  
-		glGetFloatv(GL_PROJECTION_MATRIX, m);
-
-		hits = glRenderMode(GL_RENDER);                                                 // ´ÓÑ¡ÔñÄ£Ê½·µ»ØÕý³£Ä£Ê½,¸Ãº¯Êý·µ»ØÑ¡Ôñµ½¶ÔÏóµÄ¸öÊý  
-
-		if (hits != 0)
-		{
-			processSelect(hits, selectBuff);                                            //  Ñ¡Ôñ½á¹û´¦Àí  
-			printf("\n");
-		}
-
-		glutPostRedisplay();
-	}
-
-	if (btn == GLUT_LEFT_BUTTON && state == GLUT_UP)
-	{
-		glRenderMode(GL_RENDER);
-		drawObjects(GL_RENDER);
-		glutPostRedisplay();
-	}
+inline void processSelect(GLint hits, GLuint buffer[]) {
+    if (hits <= 0) return;
+    GLuint* ptr = buffer;
+    GLuint minZ = 0xffffffff;
+    GLuint closestName = 0;
+    for (int i = 0; i < hits; ++i) {
+        GLuint names = *ptr++;
+        GLuint zMin = *ptr++;
+        ptr++; // zMax
+        if (zMin < minZ && names > 0) {
+            minZ = zMin;
+            closestName = *ptr;
+        }
+        ptr += names;
+    }
+    g_selectedIndex = (int)closestName;
 }

@@ -221,3 +221,7 @@ ModelManifest.xml
 *.exe
 *.dSYM/
 drawtool
+
+# DrawTool outputs
+drawing-*.png
+drawing.svg
